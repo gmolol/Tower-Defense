@@ -15,17 +15,20 @@ public class UnitData : ScriptableObject
 
 
     [Header("Unit Type")]
-    [SerializeField] private unitType type;
+    [SerializeField] public unitType type;
 
     [Header("Unit Info")]
     public string unitName;
     public GameObject unitModel;
+    
 
     [Header("Stat")]
     public float damage;
     public float range;
     public float spa;
-
+    public int placement;
     
     //public string unitType;
+
+    //TODO: UPGRADES COST, STAT CHANGES(through classes and hashmap), UPDATE VISUAL
 }
