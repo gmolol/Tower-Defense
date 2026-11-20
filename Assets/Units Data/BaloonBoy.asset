@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b008c4b47af7e246b1ed798539448ec, type: 3}
   m_Name: BaloonBoy
   m_EditorClassIdentifier: Assembly-CSharp::UnitData
-  type: 0
+  type: 1
   unitName: BaloonBoy
   unitModel: {fileID: 5941227935299575525, guid: c6359ddeedd2e9e419938691f4682ee2, type: 3}
   damage: 5

@@ -43,7 +43,7 @@ public class InputManager : MonoBehaviour
     GameObject statDisplay;
     GameObject unitDisplay;
     GameObject nameDisplay;
-
+    GameObject typeDisplay;
 
 
 
@@ -174,13 +174,13 @@ public class InputManager : MonoBehaviour
                 display.SetActive(true);
 
                 var script = hit.collider.gameObject.GetComponent<UnitStat>();
-                var (unitName, dmg, spa, rng, plc) = script.getStat();
+                var (unitName, dmg, spa, rng, plc, type) = script.getStat();
 
                 nameDisplay.GetComponent<TMP_Text>().text = unitName;
                 statDisplay.transform.GetChild(0).GetComponent<TMP_Text>().text = $"DMG: {dmg}";
                 statDisplay.transform.GetChild(1).GetComponent<TMP_Text>().text = $"SPA: {spa}";
                 statDisplay.transform.GetChild(2).GetComponent<TMP_Text>().text = $"RNG: {rng}";
-
+                statDisplay.transform.GetChild(3).transform.GetChild(0).GetComponent<TMP_Text>().text = type;
                 GameObject currentSelected = hit.collider.gameObject;
                 currRange = hit.collider.gameObject.transform.GetChild(0).gameObject;
 
@@ -196,7 +196,7 @@ public class InputManager : MonoBehaviour
 
             if (EventSystem.current.IsPointerOverGameObject()) 
             {
-                display.SetActive(true);
+                
                 return true;
             }
         }
@@ -221,6 +221,7 @@ public class InputManager : MonoBehaviour
             if (child.name == "Name") { nameDisplay = child.gameObject; }
             if (child.name == "Display") { unitDisplay = child.gameObject; }
             if (child.name == "Stat") { statDisplay = child.gameObject; }
+            if (child.name == "Type") { typeDisplay = child.gameObject; }
         }
     }
 
@@ -290,7 +291,7 @@ public class InputManager : MonoBehaviour
     {
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit, 10000f, hitMask))
         {
             //GameObject unit = hit.collider.gameObject;
             if (!hit.collider.gameObject.CompareTag("Phantom"))
@@ -298,6 +299,7 @@ public class InputManager : MonoBehaviour
                 Vector3 hitPos = hit.point;
                 Vector3 yOffset = new Vector3(0f, phantom.GetComponent<MeshRenderer>().bounds.size.y/2, 0f);
                 phantom.transform.position = hitPos + yOffset;
+                phantom.transform.GetChild(0).gameObject.SetActive(true);
             }
 
 
@@ -317,12 +319,20 @@ public class InputManager : MonoBehaviour
                 currentUnit = i;
 
                 phantom = Instantiate(unitList[i].unitModel);
-                    
-                    
+                Vector3 yOffset = new Vector3(0f, phantom.GetComponent<MeshRenderer>().bounds.size.y / 2, 0f);
+                createRange(phantom.transform, unitList[i].range, yOffset);
+                
+
+
                 return true;
             }
         }
         return false;
 
+    }
+
+    public void closeRangeLast() 
+    {
+        lastSelected.transform.GetChild(0).gameObject.SetActive(false);
     }
 }

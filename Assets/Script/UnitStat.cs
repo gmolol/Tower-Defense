@@ -10,7 +10,7 @@ public class UnitStat : MonoBehaviour
     public float spa;
     public int placement;
 
-
+    public string type;
 
     public GameObject display;
 
@@ -31,12 +31,21 @@ public class UnitStat : MonoBehaviour
         unitName = ud.name;
         damage = ud.damage; range = ud.range; spa = ud.spa;
         placement = ud.placement;
-
+        type = ud.type.ToString(); ;
         
     }
 
-    public (string n, float dmg, float speed, float rng, int placement) getStat()
+    public (string n, float dmg, float speed, float rng, int placement, string t) getStat()
     {
-        return (unitName, damage, spa, range, placement);
+        if (type == "Ground")
+        {
+            type = "GRND";
+        }
+        else if (type == "Hybrid") 
+        {
+            type = "HYBD";
+        }
+
+        return (unitName, damage, spa, range, placement, type);
     }
 }

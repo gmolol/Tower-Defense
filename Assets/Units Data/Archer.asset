@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b008c4b47af7e246b1ed798539448ec, type: 3}
   m_Name: Archer
   m_EditorClassIdentifier: Assembly-CSharp::UnitData
-  type: 0
+  type: 1
   unitName: Archer
   unitModel: {fileID: 4646630068321590351, guid: 3c322a19ca1d2564e84614d7b8678e21, type: 3}
   damage: 20
