@@ -4,7 +4,7 @@ public class UnitStat : MonoBehaviour
 {
 
     [Header("Stat")]
-    public string name;
+    public string unitName;
     public float damage;
     public float range;
     public float spa;
@@ -28,15 +28,15 @@ public class UnitStat : MonoBehaviour
 
     public void initializeUnit(UnitData ud) 
     {
-        this.name = ud.name;
+        unitName = ud.name;
         damage = ud.damage; range = ud.range; spa = ud.spa;
-        this.placement = ud.placement;
+        placement = ud.placement;
 
         
     }
 
     public (string n, float dmg, float speed, float rng, int placement) getStat()
     {
-        return (name, damage, spa, range, placement);
+        return (unitName, damage, spa, range, placement);
     }
 }
