@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using static UnityEngine.UI.CanvasScaler;
 public class InputManager : MonoBehaviour
 {
     [Header("Movement(Cam)")]
@@ -39,6 +43,30 @@ public class InputManager : MonoBehaviour
     GameObject statDisplay;
     GameObject unitDisplay;
     GameObject nameDisplay;
+    GameObject typeDisplay;
+
+
+
+    [Header("Unit")]
+    // keyboard stuff
+    public Material rangeMat;
+    Key[] digits =
+    {
+        Key.Digit1, Key.Digit2, Key.Digit3,
+        Key.Digit4, Key.Digit5, Key.Digit6,
+        Key.Digit7, Key.Digit8, Key.Digit9
+
+    };
+    
+    int currentUnit = DESELECTED;
+    GameObject phantom;
+    GameObject lastSelected;
+    GameObject currRange;
+
+
+    public LayerMask hitMask;
+    [Header("Constant")]
+    const int DESELECTED = -1;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -61,22 +89,17 @@ public class InputManager : MonoBehaviour
     void Update()
     {
 
-        // WHEN CLICKED ON UNIT
+        // ===================================
+        // check if click on unit
+        // ===================================
         if (Mouse.current.leftButton.wasPressedThisFrame) 
         {
-            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit)) 
-            {
-                //GameObject unit = hit.collider.gameObject;
-                if (hit.collider.gameObject.CompareTag("Towers")) 
-                {
-                    Debug.Log("Clicked on unit");
-                }
-            }
+            isUnit();
         }
 
+        // ===================================
+        //          CAM CONTROL
+        // ===================================
         Vector2 scroll = Mouse.current.scroll.ReadValue();
         if (scroll.y > 0)
         {
@@ -92,9 +115,6 @@ public class InputManager : MonoBehaviour
         cam.orthographicSize = Mathf.SmoothDamp(cam.orthographicSize, zoom, ref velocity, 0.25f);
         //move = inp.ReadValue<Vector3>().normalized;
 
-
-
-
         if (Keyboard.current.qKey.isPressed) 
         {
             targetYaw += 0.2f;
@@ -104,9 +124,6 @@ public class InputManager : MonoBehaviour
             targetYaw -= 0.2f;
         }
         yaw = Mathf.SmoothDampAngle(yaw, targetYaw, ref yawVel, 0.25f);
-        //tarPos +=  (move*speed)/2;
-
-
 
         Vector3 raw = inp.ReadValue<Vector3>();
         Vector3 move = Quaternion.Euler(0f, yaw, 0f) * raw;
@@ -116,23 +133,21 @@ public class InputManager : MonoBehaviour
         tarPos.x = Mathf.Clamp(tarPos.x,-24f,24f);
         tarPos.z = Mathf.Clamp(tarPos.z, -24f, 24f);
 
-
-
-
-
-
-
-        //==================
+        // ===================================
         //  PLACING UNIT
-        //==================
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        // ===================================
+
+        isNumKeyPressed();
+        if (phantom)
         {
-
-            rayCastandPlace();
-
-            //print(unitInfoDebug(0));
+            phantomToMouse();
         }
 
+        if (Mouse.current.leftButton.wasPressedThisFrame && currentUnit != DESELECTED)
+        {
+            print(currentUnit);
+            rayCastandPlace(currentUnit);
+        }
     }
 
     private void LateUpdate()
@@ -143,6 +158,58 @@ public class InputManager : MonoBehaviour
 
 
     // ===================================
+    //      CLICK ON UNIT
+    // ===================================
+
+    bool isUnit() 
+    {
+        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit) )
+        {
+            
+            if (hit.collider.gameObject.CompareTag("Towers"))
+            {
+                display.SetActive(true);
+
+                var script = hit.collider.gameObject.GetComponent<UnitStat>();
+                var (unitName, dmg, spa, rng, plc, type) = script.getStat();
+
+                nameDisplay.GetComponent<TMP_Text>().text = unitName;
+                statDisplay.transform.GetChild(0).GetComponent<TMP_Text>().text = $"DMG: {dmg}";
+                statDisplay.transform.GetChild(1).GetComponent<TMP_Text>().text = $"SPA: {spa}";
+                statDisplay.transform.GetChild(2).GetComponent<TMP_Text>().text = $"RNG: {rng}";
+                statDisplay.transform.GetChild(3).transform.GetChild(0).GetComponent<TMP_Text>().text = type;
+                GameObject currentSelected = hit.collider.gameObject;
+                currRange = hit.collider.gameObject.transform.GetChild(0).gameObject;
+
+                if (lastSelected && lastSelected != currentSelected) 
+                {
+                    lastSelected.transform.GetChild(0).gameObject.SetActive(false);
+                }
+
+                currRange.SetActive(true);
+                lastSelected = hit.collider.gameObject;
+                return true;
+            }
+
+            if (EventSystem.current.IsPointerOverGameObject()) 
+            {
+                
+                return true;
+            }
+        }
+
+        if (currRange) { currRange.SetActive(false); }
+        
+        display.SetActive(false);
+        return false;
+    }
+
+
+
+    // ===================================
     //      Display Helper
     // ===================================
 
@@ -150,9 +217,11 @@ public class InputManager : MonoBehaviour
     {
         foreach (Transform child in display.transform) 
         {
+            
             if (child.name == "Name") { nameDisplay = child.gameObject; }
             if (child.name == "Display") { unitDisplay = child.gameObject; }
             if (child.name == "Stat") { statDisplay = child.gameObject; }
+            if (child.name == "Type") { typeDisplay = child.gameObject; }
         }
     }
 
@@ -161,22 +230,47 @@ public class InputManager : MonoBehaviour
     // ===================================
     //      Unit placement helper
     // ===================================
-    void rayCastandPlace()
+    void rayCastandPlace(int index)
     {
+
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit, 10000f, hitMask))
         {
             //GameObject unit = hit.collider.gameObject;
 
             if (hit.collider.gameObject.CompareTag("PlayableArea"))
             {
                 Vector3 hitPos = hit.point;
-                GameObject tower = Instantiate(unitList[0].unitModel, hitPos, Quaternion.identity);
-                tower.GetComponent<UnitStat>().initializeUnit(unitList[0]);
+                Vector3 yOffset = new Vector3(0f, phantom.GetComponent<MeshRenderer>().bounds.size.y / 2, 0f);
+                GameObject tower = Instantiate(unitList[index].unitModel, hitPos + yOffset, Quaternion.identity);
+                tower.GetComponent<UnitStat>().initializeUnit(unitList[index]);
+                tower.tag = "Towers";
+
+                createRange(tower.transform, tower.GetComponent<UnitStat>().range, yOffset);
+                tower.transform.GetChild(0).gameObject.SetActive(false);
+                currentUnit = DESELECTED;
+                Destroy(phantom);
             }
         }
+    }
+
+    void createRange(Transform currUnit, float range, Vector3 yOff) 
+    {
+        GameObject rangeObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        rangeObj.name = "range disc";
+        Destroy(rangeObj.GetComponent<Collider>());
+        rangeObj.transform.SetParent(currUnit, false);
+        rangeObj.transform.localPosition = new Vector3(0f, 0.02f, 0f) - yOff;
+
+        Vector3 s = currUnit.lossyScale;
+        rangeObj.transform.localScale = new Vector3(
+            range * 2f / s.x,
+            0.01f / s.y,
+            range * 2f / s.z);
+
+        rangeObj.GetComponent<Renderer>().material = rangeMat;
     }
 
     string unitInfoDebug(int a)
@@ -191,5 +285,54 @@ public class InputManager : MonoBehaviour
 
         return sb.ToString();
 
+    }
+
+    void phantomToMouse() 
+    {
+        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 10000f, hitMask))
+        {
+            //GameObject unit = hit.collider.gameObject;
+            if (!hit.collider.gameObject.CompareTag("Phantom"))
+            {
+                Vector3 hitPos = hit.point;
+                Vector3 yOffset = new Vector3(0f, phantom.GetComponent<MeshRenderer>().bounds.size.y/2, 0f);
+                phantom.transform.position = hitPos + yOffset;
+                phantom.transform.GetChild(0).gameObject.SetActive(true);
+            }
+
+
+        }
+    }
+
+
+    bool isNumKeyPressed() 
+    {
+        for (int i = 0; i < digits.Length; i++) 
+        {
+            if (Keyboard.current[digits[i]].wasPressedThisFrame) 
+            {
+                if (currentUnit == i) { currentUnit = DESELECTED; Destroy(phantom); return true;  }
+                if (phantom) { Destroy(phantom); }
+                
+                currentUnit = i;
+
+                phantom = Instantiate(unitList[i].unitModel);
+                Vector3 yOffset = new Vector3(0f, phantom.GetComponent<MeshRenderer>().bounds.size.y / 2, 0f);
+                createRange(phantom.transform, unitList[i].range, yOffset);
+                
+
+
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    public void closeRangeLast() 
+    {
+        lastSelected.transform.GetChild(0).gameObject.SetActive(false);
     }
 }

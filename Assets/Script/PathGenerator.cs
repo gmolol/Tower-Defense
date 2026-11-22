@@ -339,6 +339,7 @@ public class PathGenerator : MonoBehaviour
             road.transform.rotation = Quaternion.LookRotation(b - a);
             road.transform.localScale = new Vector3(1f,0.2f,Vector3.Distance(a, b) + 1f);
             road.transform.parent = guideParent.transform;
+            road.layer = 6;
         }
     }
     // added by gmo:
