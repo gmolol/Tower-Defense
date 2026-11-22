@@ -341,4 +341,13 @@ public class PathGenerator : MonoBehaviour
             road.transform.parent = guideParent.transform;
         }
     }
+    // added by gmo:
+    // returns the path as world positions for enemies to walk it
+    public List<Vector3> GetWorldPath()
+    {
+        List<Vector3> points = new List<Vector3>();
+        foreach (Vector2Int p in path)
+            points.Add(posMatrix[p.x, p.y]);
+        return points;
+    }
 }
