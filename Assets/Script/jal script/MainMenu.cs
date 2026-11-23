@@ -5,7 +5,7 @@ public class MainMenu : MonoBehaviour
 {
     public string gameScene = "Game";
 
-    public void Play() => SceneManager.LoadScene(gameScene);
+    public void Play() => SceneFader.Instance.Load(gameScene);
 
     public void Quit()
     {
