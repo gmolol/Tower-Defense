@@ -610,6 +610,15 @@ MonoBehaviour:
   pathGenerator: {fileID: 562229725}
   enemyTypes:
   - {fileID: 11400000, guid: d1bc54cff8c935049a900590e6237c36, type: 2}
+  timeBetweenWaves: 2
+  timeBetweenSpawns: 0.5
+  startEnemies: 5
+  extraEnemiesPerWave: 1
+  healthGrowth: 0.1
+  currentWave: 0
+  enemiesLeftToSpawn: 0
+  enemiesAlive: 0
+  healthMultiplier: 1
 --- !u!1 &1235308166
 GameObject:
   m_ObjectHideFlags: 0

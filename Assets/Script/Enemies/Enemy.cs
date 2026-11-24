@@ -23,10 +23,11 @@ public class Enemy : MonoBehaviour
     List<Vector3> waypoints;
     int targetIndex = 0;
 
-    public void initializeEnemy(EnemyData ed, List<Vector3> path)
+    // healthMultiplier comes from WaveSpawner (wave 1 = 1.0, wave 2 = 1.1, ...)
+    public void initializeEnemy(EnemyData ed, List<Vector3> path, float healthMultiplier)
     {
         enemyName = ed.enemyName;
-        health = ed.health;
+        health = ed.health * healthMultiplier;
         speed = ed.speed;
         damageToBase = ed.damageToBase;;
         reward = ed.reward;
