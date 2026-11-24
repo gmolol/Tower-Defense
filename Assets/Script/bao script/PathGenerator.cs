@@ -56,11 +56,6 @@ public class PathGenerator : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
 
     // Debug print the size of the platform
@@ -116,6 +111,7 @@ public class PathGenerator : MonoBehaviour
         }
     }
 
+    // DEBUG ONLY
     public void makeGuide() 
     {
         foreach (var position in posList)
@@ -162,6 +158,8 @@ public class PathGenerator : MonoBehaviour
 
         posMatrix = new Vector3[col, row];
     }
+
+    // DEBUG ONLY
     public void printMatrix() 
     {
         StringBuilder sb = new StringBuilder();
@@ -185,6 +183,7 @@ public class PathGenerator : MonoBehaviour
         Debug.Log(sb.ToString());
     }
 
+    // DEBUG FUNCTION
     public void genKey(string a) 
     {
         
@@ -198,6 +197,7 @@ public class PathGenerator : MonoBehaviour
         tmp.transform.SetParent(guideParent.transform);
     }
 
+    // PICK A START AND END NODE ANDF SAVE IT +  CREATE A DEBUG SPHERE
     public void pickStartEnd() 
     {
         print(row);
@@ -210,7 +210,7 @@ public class PathGenerator : MonoBehaviour
         makeNode(endNode,"End");
     }
 
-
+    // pass in a position as a vector 2 and a name to create a sphere there, used by pick start and end
     void makeNode(Vector2Int n,string name)
     {
         GameObject tmp =   GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -225,7 +225,11 @@ public class PathGenerator : MonoBehaviour
                 Path STUFF 
        ================================ */
 
-
+    /*
+        For each attempt, start at a start node, pick an availiable position in the matrix in the surrounding forward area
+        make sure it doesn't touch the already created path, not off path
+        
+     */
     public void generatePath()
     {
         for (int attempt = 0; attempt < maxAttempts; attempt++)
