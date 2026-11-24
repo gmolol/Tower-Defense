@@ -11,6 +11,7 @@
 | Jalen Jallorina | `jaljoestar` |
 
 ## Game Description
+**Title:** RIFT-KEEP
 **Perspective:** Top-down
 **Art style:** Low poly
 **Inspiration:** *Slay the Spire 2* (randomized cards)
