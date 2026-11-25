@@ -47,6 +47,6 @@
 | K | *(testing only)* Deal 5 damage to all enemies |
 
 ## Gameplay Video
-[Link to gameplay video]
+[https://drive.google.com/file/d/1Oaf868W0uQWU1P4KIcQfHhc19vxNsIck/view?usp=sharing]
 
 

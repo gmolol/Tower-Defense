@@ -44,8 +44,8 @@ public class InputManager : MonoBehaviour
     GameObject unitDisplay;
     GameObject nameDisplay;
     GameObject typeDisplay;
-
-
+    public GameObject previewArea;
+    GameObject prevUnit;
 
     [Header("Unit")]
     // keyboard stuff
@@ -171,22 +171,34 @@ public class InputManager : MonoBehaviour
             
             if (hit.collider.gameObject.CompareTag("Towers"))
             {
+                GameObject currentSelected = hit.collider.gameObject;
+
+                //if (currentSelected = lastSelected) return true;
                 display.SetActive(true);
 
+
+                clearSelect();
                 var script = hit.collider.gameObject.GetComponent<UnitStat>();
                 var (unitName, dmg, spa, rng, plc, type) = script.getStat();
+
+                GameObject unim;
+                unim = Instantiate(hit.collider.gameObject, previewArea.transform.position,Quaternion.identity);
+                unim.layer = 7;
+                unim.transform.parent = previewArea.transform;
+                prevUnit = unim;
 
                 nameDisplay.GetComponent<TMP_Text>().text = unitName;
                 statDisplay.transform.GetChild(0).GetComponent<TMP_Text>().text = $"DMG: {dmg}";
                 statDisplay.transform.GetChild(1).GetComponent<TMP_Text>().text = $"SPA: {spa}";
                 statDisplay.transform.GetChild(2).GetComponent<TMP_Text>().text = $"RNG: {rng}";
                 statDisplay.transform.GetChild(3).transform.GetChild(0).GetComponent<TMP_Text>().text = type;
-                GameObject currentSelected = hit.collider.gameObject;
+                
                 currRange = hit.collider.gameObject.transform.GetChild(0).gameObject;
 
                 if (lastSelected && lastSelected != currentSelected) 
                 {
                     lastSelected.transform.GetChild(0).gameObject.SetActive(false);
+                    Destroy(previewArea.transform.GetChild(0).gameObject);
                 }
 
                 currRange.SetActive(true);
@@ -194,19 +206,28 @@ public class InputManager : MonoBehaviour
                 return true;
             }
 
+
             if (EventSystem.current.IsPointerOverGameObject()) 
             {
-                
                 return true;
             }
         }
 
-        if (currRange) { currRange.SetActive(false); }
-        
+
+
+        clearSelect();
         display.SetActive(false);
         return false;
     }
-
+    void clearSelect() 
+    {
+        if (currRange) { currRange.SetActive(false); }
+        if (prevUnit) { Destroy(prevUnit); }
+        currRange = null;
+        prevUnit = null;
+        lastSelected = null;
+        
+    }
 
 
     // ===================================
