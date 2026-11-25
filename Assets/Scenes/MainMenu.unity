@@ -607,7 +607,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: defending towers
+  m_text: riftkeep
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9a0dadbafee220a42895b4aca82820bd, type: 2}
   m_sharedMaterial: {fileID: -4322281840905892956, guid: 9a0dadbafee220a42895b4aca82820bd, type: 2}
@@ -1358,7 +1358,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: defending towers
+  m_text: riftkeep
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9a0dadbafee220a42895b4aca82820bd, type: 2}
   m_sharedMaterial: {fileID: -4322281840905892956, guid: 9a0dadbafee220a42895b4aca82820bd, type: 2}
@@ -2604,7 +2604,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: defending towers
+  m_text: riftkeep
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9a0dadbafee220a42895b4aca82820bd, type: 2}
   m_sharedMaterial: {fileID: -4322281840905892956, guid: 9a0dadbafee220a42895b4aca82820bd, type: 2}
