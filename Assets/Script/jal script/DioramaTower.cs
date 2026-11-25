@@ -37,7 +37,7 @@ public class DioramaTower : MonoBehaviour
     {
         Enemy best = null;
         float bestDist = range * range;
-        foreach (var e in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        foreach (var e in FindObjectsByType<Enemy>())
         {
             float d = (e.transform.position - transform.position).sqrMagnitude;
             if (d < bestDist) { bestDist = d; best = e; }
